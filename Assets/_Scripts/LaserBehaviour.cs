@@ -28,7 +28,7 @@ public class LaserBehaviour : MonoBehaviour
 
         // The game object that contains this component will be
         // destroyed after lifetime seconds have passed
-        Destroy(gameObject, lifetime);
+       //Destroy(gameObject, lifetime);
     }
 
     // Update is called once per frame
