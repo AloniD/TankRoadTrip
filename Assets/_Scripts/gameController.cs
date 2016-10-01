@@ -18,6 +18,7 @@ public class gameController : MonoBehaviour
 
     public GameObject rock;
     public GameObject cactus;
+    public GameObject enemy;
     public Transform enemyBullet;
 
     //this controllers's empty game object position
@@ -206,6 +207,11 @@ public class gameController : MonoBehaviour
             // spawn another wave
             yield return new WaitForSeconds(timeBeforeWaves);
         }
+    }
+
+    float CurveWeightedRandom(AnimationCurve curve)
+    {
+        return curve.Evaluate(Random.value);
     }
 
     // Allows classes outside of GameController to say when we

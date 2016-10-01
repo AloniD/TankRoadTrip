@@ -8,6 +8,28 @@ public class PlayerBehaviour : MonoBehaviour
     // Movement modifier applied to directional movement.
     public float playerSpeed = 400.0f;
 
+    //Laser
+    public Transform laser;
+
+    public AudioClip shoot;
+    public AudioSource shootSource;
+
+    //how far from the center of the ship the laser should be
+    public float laserDistance = .2f;
+
+    // How much time (in seconds) we should wait before
+    // we can fire again
+    public float timeBetweenFires = .3f;
+
+    // If value is less than or equal 0, we can fire
+    private float timeTilNextFire = 0.0f;
+
+    //shot dispersion angle, goes from this to its negative
+    public float shotDispersion = 5.0f;
+
+    //shoot keys
+    public List<KeyCode> shootButton;
+
     private float actualSpeed;
 
     public float rotationspeed;
@@ -23,6 +45,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         actualSpeed = playerSpeed;
         scrollingBG = GameObject.Find("BG");
+        shootSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -34,6 +57,20 @@ public class PlayerBehaviour : MonoBehaviour
 
         // Move the player's body
         Movement();
+
+        // a foreach loop will go through each item inside of
+        // shootButton and do whatever we placed in {}s using the
+        // element variable to hold the item
+        foreach (KeyCode element in shootButton)
+        {
+            if (Input.GetKey(element) && timeTilNextFire <= 0)
+            {
+                timeTilNextFire = timeBetweenFires;
+                ShootLaser();
+                break;
+            }
+        }
+        timeTilNextFire -= Time.deltaTime;
 
     }
 
@@ -142,4 +179,25 @@ public class PlayerBehaviour : MonoBehaviour
         this.transform.rotation = rot;
     }
     */
+
+    // Creates a laser and gives it an initial position in
+    // front of the ship.
+    void ShootLaser()
+    {
+        // We want to position the laser in relation to
+        // our player's location
+        Vector3 laserPos = this.transform.position;
+        // The angle the laser will move away from the center
+        float rotationAngle = transform.localEulerAngles.z - 90;
+        // Calculate the position right in front of the ship's
+        // position laserDistance units away
+        laserPos.x += (Mathf.Cos((rotationAngle) *
+        Mathf.Deg2Rad) * -laserDistance);
+        laserPos.y += (Mathf.Sin((rotationAngle) *
+        Mathf.Deg2Rad) * -laserDistance);
+        //add some angle to the lazer for dispersion, makes it look cooler
+        Quaternion fireAngle = Quaternion.Euler(0, 0, Random.Range(-shotDispersion, shotDispersion));
+        Instantiate(laser, laserPos, fireAngle);
+        shootSource.PlayOneShot(shoot);
+    }
 }
